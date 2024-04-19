@@ -1,4 +1,4 @@
-name: International Finance REST API CI with Maven
+name: Pickle REST API CI with Maven
 
 on:
   push:

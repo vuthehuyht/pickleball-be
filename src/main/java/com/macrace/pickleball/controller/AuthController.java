@@ -1,5 +1,6 @@
 package com.macrace.pickleball.controller;
 
+import com.macrace.pickleball.dto.request.LoginRequest;
 import com.macrace.pickleball.dto.request.RegisterRequest;
 import com.macrace.pickleball.service.UserService;
 import jakarta.validation.Valid;
@@ -25,5 +26,11 @@ public class AuthController {
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest request) {
         log.info("Register new account request");
         return new ResponseEntity<>(userService.createNewUser(request), HttpStatus.CREATED);
+    }
+
+    @PostMapping(path = "/login")
+    public ResponseEntity<Object> login(@Valid @RequestBody LoginRequest request) {
+        log.info("User logging in request");
+        return new ResponseEntity<>(userService.loginUser(request), HttpStatus.OK);
     }
 }

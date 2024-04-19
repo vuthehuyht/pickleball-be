@@ -46,4 +46,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getMessage()
         ), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(PhoneNumberNotFoundException.class)
+    public ResponseEntity<Object> handlePhoneNumberNotFoundException(PhoneNumberNotFoundException e) {
+        log.error("PhoneNumberNotFoundException {}", e.toString());
+        return new ResponseEntity<>(new ErrorResponseTemplate(
+                e.getErrorCode(),
+                e.getMessage()
+        ), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UsernameOrPasswordWrongException.class)
+    public ResponseEntity<Object> handleUsernameOrPasswordWrongException(UsernameOrPasswordWrongException e) {
+        log.error("UsernameOrPasswordWrongException {}", e.toString());
+        return new ResponseEntity<>(new ErrorResponseTemplate(
+                e.getErrorCode(),
+                e.getMessage()
+        ), HttpStatus.BAD_REQUEST);
+    }
 }

@@ -52,14 +52,13 @@ public class AuthControllerTest {
     @Test
     void testPhoneNumberBlank() throws Exception {
         RegisterRequest request = new RegisterRequest();
-        request.setPhoneNumber("");
         request.setPassword("123456");
         request.setFullName("test");
 
         mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsBytes(request)))
-                .andExpect(status().isBadRequest());
-                //.andExpect(jsonPath("$.errors[0]").value("Phone number is required"));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[1]").value("Phone number is required"));
     }
 
     @Test

@@ -25,6 +25,7 @@ public class FilterChainConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/demo").permitAll()
                         .requestMatchers("/api/v1/auth/register").permitAll()
+                        .requestMatchers("/api/v1/auth/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

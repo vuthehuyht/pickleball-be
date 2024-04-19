@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,4 +35,7 @@ public class User {
 
     @Column(name = "birthday")
     private Date birthday;
+
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 }

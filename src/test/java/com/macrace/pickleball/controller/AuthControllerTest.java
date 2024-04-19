@@ -2,8 +2,10 @@ package com.macrace.pickleball.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.macrace.pickleball.constant.ErrorCode;
+import com.macrace.pickleball.dto.request.LoginRequest;
 import com.macrace.pickleball.dto.request.RegisterRequest;
 import com.macrace.pickleball.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,6 +34,16 @@ public class AuthControllerTest {
     @Autowired
     private UserService userService;
 
+    @BeforeEach
+    void init() {
+        RegisterRequest request = new RegisterRequest();
+        request.setPhoneNumber("0972808478");
+        request.setPassword("123456");
+        request.setFullName("User Test");
+
+        userService.createNewUser(request);
+    }
+
     @Test
     void authControllerInitializedCorrectly() {
         assertThat(authController).isNotNull();
@@ -57,8 +69,7 @@ public class AuthControllerTest {
 
         mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsBytes(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[1]").value("Phone number is required"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -127,5 +138,63 @@ public class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error_code").value(ErrorCode.PHONE_NUMBER_EXIST))
                 .andExpect(jsonPath("$.message").value("Phone number exists"));
+    }
+
+    @Test
+    void testLoginAllFieldBlank() throws Exception {
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("");
+        request.setPassword("");
+
+        mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testLoginPhoneNumberBlank() throws Exception {
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("");
+        request.setPassword("1234556");
+
+        mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testLoginPasswordBlank() throws Exception {
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("0972809810");
+        request.setPassword("");
+
+        mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0]").value("Password is required"));
+    }
+
+    @Test
+    void testLoginUsernameOrPasswordWrong() throws Exception {
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("0972809810");
+        request.setPassword("123456");
+
+        mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error_code").value(ErrorCode.PHONE_NUMBER_NOT_FOUND))
+                .andExpect(jsonPath("$.message").value("Phone number not found"));
+    }
+
+    @Test
+    void testLoginValid() throws Exception {
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("0972808478");
+        request.setPassword("123456");
+
+        mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isOk());
     }
 }

@@ -58,7 +58,7 @@ public class AuthControllerTest {
         mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]").value("Phone number is required"));
+                .andExpect(jsonPath("$.errors[1]").value("Phone number is required"));
     }
 
     @Test

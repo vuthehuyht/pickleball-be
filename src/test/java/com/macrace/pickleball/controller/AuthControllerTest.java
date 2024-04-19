@@ -175,7 +175,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    void testLoginUsernameOrPasswordWrong() throws Exception {
+    void testLoginPhoneNumberNotFound() throws Exception {
         LoginRequest request = new LoginRequest();
         request.setPhoneNumber("0972809810");
         request.setPassword("123456");
@@ -185,6 +185,19 @@ public class AuthControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error_code").value(ErrorCode.PHONE_NUMBER_NOT_FOUND))
                 .andExpect(jsonPath("$.message").value("Phone number not found"));
+    }
+
+    @Test
+    void testLoginPhoneNumberOrPasswordWrong() throws Exception {
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("0972808478");
+        request.setPassword("123456789");
+
+        mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error_code").value(ErrorCode.USERNAME_PASSWORD_WRONG))
+                .andExpect(jsonPath("$.message").value("Phone number or password incorrect"));
     }
 
     @Test

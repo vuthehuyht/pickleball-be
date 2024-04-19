@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse loginUser(LoginRequest request) {
         User user = getUserByPhoneNumber(request.getPhoneNumber());
-        if (!passwordEncoder.matches(user.getPassword(), request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new UsernameOrPasswordWrongException();
         }
 

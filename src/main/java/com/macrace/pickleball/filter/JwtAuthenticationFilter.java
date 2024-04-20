@@ -81,53 +81,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
             }
         }
-
-//        var accessToken = request.getHeader(jwtConfig.getHeader());
-//        if (accessToken != null && !accessToken.isBlank() && accessToken.startsWith(jwtConfig.getPrefix() + " ")) {
-//            accessToken = accessToken.substring(7);
-//
-//            try {
-//                if (jwtService.isValidToken(accessToken)) {
-//                    Optional<Token> tokenOptional = tokenRepository.findByAccessToken(accessToken);
-//                    if (tokenOptional.isPresent() && !tokenOptional.get().isExpired()) {
-//                        Claims claims = jwtService.extractClaims(accessToken);
-//                        var username = claims.getSubject();
-//
-//                        if (username != null) {
-//                            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-//                                    username,
-//                                    null,
-//                                    Collections.emptyList()
-//                            );
-//                            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-//                        }
-//                    } else {
-//                        log.error("Error message: Access token is unavailable");
-//                        var msgError = Utils.handleTokenUnavailable();
-//                        var msgJson = objectMapper.writeValueAsString(msgError);
-//
-//                        returnResponse(response, msgJson);
-//                    }
-//                }
-//            } catch (Exception e) {
-//                log.error("Error message: {}", e.getLocalizedMessage());
-//                var msgError = Utils.handleUnauthorized();
-//                var msgJson = objectMapper.writeValueAsString(msgError);
-//
-//                returnResponse(response, msgJson);
-//            }
-//
-//            log.info("End filter {}", request.getRequestURI());
-//            filterChain.doFilter(request, response);
-//        } else {
-//            log.error("Error message: Access token is blank or null");
-//            var msgError = Utils.handleUnauthorized();
-//            var msgJson = objectMapper.writeValueAsString(msgError);
-//
-//            returnResponse(response, msgJson);
-//            log.info("End filter {}", request.getRequestURI());
-//            filterChain.doFilter(request, response);
-//        }
     }
 
     private void returnResponse(HttpServletResponse response, String message) throws IOException {

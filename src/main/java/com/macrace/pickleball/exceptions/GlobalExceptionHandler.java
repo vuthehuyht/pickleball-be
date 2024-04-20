@@ -64,4 +64,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getMessage()
         ), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(FacilityNotFoundException.class)
+    public ResponseEntity<Object> handleFacilityNotFoundException(FacilityNotFoundException e) {
+        log.error("FacilityNotFoundException {}", e.toString());
+        return new ResponseEntity<>(new ErrorResponseTemplate(
+                e.getErrorCode(),
+                e.getMessage()
+        ), HttpStatus.NOT_FOUND);
+    }
+
 }

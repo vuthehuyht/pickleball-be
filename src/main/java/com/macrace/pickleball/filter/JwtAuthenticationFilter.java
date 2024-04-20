@@ -42,11 +42,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("Start filter {}", request.getRequestURI());
 
-        if (ALLOW_PATH.contains(request.getServletPath())) {
-            log.info("End filter {}", request.getRequestURI());
-            filterChain.doFilter(request, response);
+        if (ALLOW_PATH.contains(request.getRequestURI())) {
+            endFilter(request, response, filterChain);
+            return;
         } else {
             var accessToken = request.getHeader(jwtConfig.getHeader());
+            if (accessToken == null || !accessToken.startsWith(jwtConfig.getPrefix())) {
+                endFilter(request, response, filterChain);
+                return;
+            }
+
             try {
                 if (jwtService.isValidToken(accessToken.substring(7))) {
                     Optional<Token> tokenOptional = tokenRepository.findByAccessToken(accessToken);
@@ -61,6 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     Collections.emptyList()
                             );
                             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                            endFilter(request, response, filterChain);
                         }
                     } else {
                         log.error("Error message: Access token is unavailable");
@@ -68,6 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         var msgJson = objectMapper.writeValueAsString(msgError);
 
                         returnResponse(response, msgJson);
+                        return;
                     }
                 }
             } catch (Exception e) {
@@ -76,9 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 var msgJson = objectMapper.writeValueAsString(msgError);
 
                 returnResponse(response, msgJson);
-            } finally {
-                log.info("End filter {}", request.getRequestURI());
-                filterChain.doFilter(request, response);
+                return;
             }
         }
     }
@@ -87,5 +92,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(message);
+    }
+
+    private void endFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.info("End filter {}", request.getRequestURI());
+        filterChain.doFilter(request, response);
     }
 }

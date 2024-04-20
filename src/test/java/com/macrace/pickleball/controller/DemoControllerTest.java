@@ -38,4 +38,16 @@ public class DemoControllerTest {
         mockMvc.perform(get("/api/v1/demo"))
                 .andExpect(content().string(containsString("demo API is running")));
     }
+
+    @Test
+    void testAccessTokenUnavailable() throws Exception {
+        mockMvc.perform(get("/api/v1/test").header("Authorization", "123"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testAccessTokenNull() throws Exception {
+        mockMvc.perform(get("/api/v1/test"))
+                .andExpect(status().isUnauthorized());
+    }
 }

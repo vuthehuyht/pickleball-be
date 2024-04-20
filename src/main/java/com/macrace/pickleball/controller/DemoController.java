@@ -7,8 +7,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/api/v1")
 public class DemoController {
-    @GetMapping(path = "demo")
+    @GetMapping(path = "/demo")
     public String demo() {
         return "demo API is running";
+    }
+
+    @GetMapping(path = "/test")
+    public String test() {
+        return "test API is running";
     }
 }

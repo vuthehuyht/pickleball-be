@@ -54,9 +54,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 if (jwtService.isValidToken(accessToken.substring(7))) {
-                    Optional<Token> tokenOptional = tokenRepository.findByAccessToken(accessToken);
+                    Optional<Token> tokenOptional = tokenRepository.findByAccessToken(accessToken.substring(7));
                     if (tokenOptional.isPresent() && !tokenOptional.get().isExpired()) {
-                        Claims claims = jwtService.extractClaims(accessToken);
+                        Claims claims = jwtService.extractClaims(accessToken.substring(7));
                         var username = claims.getSubject();
 
                         if (username != null) {

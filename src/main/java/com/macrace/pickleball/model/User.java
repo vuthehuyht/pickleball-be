@@ -38,4 +38,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
+
+    @OneToMany(mappedBy = "user")
+    private List<Facility> facilities;
 }

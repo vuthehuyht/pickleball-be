@@ -39,6 +39,8 @@ public class FacilityServiceTest {
 
         Facility facility = Facility.builder()
                 .name("test facility")
+                .address("test")
+                .phoneNumber("0972808490")
                 .user(user)
                 .build();
         facilityRepository.save(facility);

@@ -83,12 +83,60 @@ public class FacilityControllerTest {
 
         FacilityRequest request2 = new FacilityRequest();
         request2.setName("");
+        request2.setAddress("address test");
+        request2.setPhoneNumber("0972808490");
 
         mockMvc.perform(post("/api/v1/facility")
                         .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsBytes(request)))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsBytes(request2)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0]").value("Facility name is required"));
+    }
+
+    @Test
+    void testFacilityAddressBlank() throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("0972808478");
+        request.setPassword("123456");
+        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/auth/login"),
+                request, LoginResponse.class);
+
+        FacilityRequest request2 = new FacilityRequest();
+        request2.setName("facility test");
+        request2.setAddress("");
+        request2.setPhoneNumber("0972808490");
+
+        mockMvc.perform(post("/api/v1/facility")
+                        .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsBytes(request2)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0]").value("Facility address is required"));
+    }
+
+    @Test
+    void testFacilityPhoneNumberBlank() throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("0972808478");
+        request.setPassword("123456");
+        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/auth/login"),
+                request, LoginResponse.class);
+
+        FacilityRequest request2 = new FacilityRequest();
+        request2.setName("facility test");
+        request2.setAddress("facility address test");
+        request2.setPhoneNumber("");
+
+        mockMvc.perform(post("/api/v1/facility")
+                        .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsBytes(request2)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0]").value("Phone number is required"));
     }
 
     @Test
@@ -104,6 +152,8 @@ public class FacilityControllerTest {
 
         FacilityRequest request2 = new FacilityRequest();
         request2.setName("test");
+        request2.setAddress("facility test");
+        request2.setPhoneNumber("0972808490");
 
         mockMvc.perform(post("/api/v1/facility")
                         .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
@@ -125,6 +175,8 @@ public class FacilityControllerTest {
 
         FacilityRequest entity = new FacilityRequest();
         entity.setName("test 1");
+        entity.setAddress("facility test");
+        entity.setPhoneNumber("0972808490");
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + response.getBody().accessToken());
@@ -172,6 +224,9 @@ public class FacilityControllerTest {
 
         FacilityRequest entity = new FacilityRequest();
         entity.setName("test 1");
+        entity.setAddress("facility test");
+        entity.setPhoneNumber("0972808490");
+
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + response.getBody().accessToken());
@@ -182,6 +237,8 @@ public class FacilityControllerTest {
 
         FacilityRequest request2 = new FacilityRequest();
         request2.setName("test 2");
+        request2.setAddress("facility test");
+        request2.setPhoneNumber("0972808490");
 
         mockMvc.perform(put("/api/v1/facility/1")
                         .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())

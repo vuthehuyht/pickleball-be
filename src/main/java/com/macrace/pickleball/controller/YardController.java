@@ -29,4 +29,10 @@ public class YardController {
         log.info("Get all yards request");
         return new ResponseEntity<>(yardService.getAllYard(), HttpStatus.OK);
     }
+
+    @PutMapping(path = "/yard/{yardId}")
+    public ResponseEntity<Object> updateYard(@RequestParam("yardId") Integer yardId, YardRequest request) {
+        log.info("Updating yard request");
+        return new ResponseEntity<>(yardService.updateYard(yardId, request), HttpStatus.OK);
+    }
 }

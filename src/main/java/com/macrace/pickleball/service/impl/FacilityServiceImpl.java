@@ -3,6 +3,7 @@ package com.macrace.pickleball.service.impl;
 import com.macrace.pickleball.dto.request.FacilityRequest;
 import com.macrace.pickleball.dto.response.AddFacilityResponse;
 import com.macrace.pickleball.dto.response.FacilityResponse;
+import com.macrace.pickleball.dto.response.MessageResponseTemplate;
 import com.macrace.pickleball.exceptions.FacilityNotFoundException;
 import com.macrace.pickleball.exceptions.PhoneNumberNotFoundException;
 import com.macrace.pickleball.model.Facility;
@@ -28,7 +29,7 @@ public class FacilityServiceImpl implements FacilityService {
     private final UserRepository userRepository;
 
     @Override
-    public AddFacilityResponse addFacility(FacilityRequest request) {
+    public MessageResponseTemplate addFacility(FacilityRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> userOptional = userRepository.findByPhoneNumber(authentication.getName());
         if (userOptional.isEmpty()) {
@@ -37,11 +38,13 @@ public class FacilityServiceImpl implements FacilityService {
 
         Facility newFacility = Facility.builder()
                 .name(request.getName())
+                .address(request.getAddress())
+                .phoneNumber(request.getPhoneNumber())
                 .user(userOptional.get())
                 .build();
         facilityRepository.save(newFacility);
         log.info("Creating new facility done");
-        return new AddFacilityResponse("New facility added successfully");
+        return new MessageResponseTemplate("New facility added successfully");
     }
 
     @Override
@@ -52,19 +55,25 @@ public class FacilityServiceImpl implements FacilityService {
             return response;
         }
 
-        facilities.forEach(facility -> response.add(new FacilityResponse(facility.getId(), facility.getName())));
+        facilities.forEach(facility -> response.add(
+                new FacilityResponse(
+                        facility.getId(),
+                        facility.getName(),
+                        facility.getAddress(),
+                        facility.getPhoneNumber()
+                )));
         log.info("Getting all facilities done");
         return response;
     }
 
     @Override
-    public FacilityResponse updateFacility(Integer id, FacilityRequest request) {
+    public MessageResponseTemplate updateFacility(Integer id, FacilityRequest request) {
         Facility facility = Optional.ofNullable(facilityRepository.findById(id)
                 .orElseThrow(FacilityNotFoundException::new)).get();
 
         facility.setName(request.getName());
         facilityRepository.save(facility);
         log.info("Updating facility with id = {}", id);
-        return new FacilityResponse(id, facility.getName());
+        return new MessageResponseTemplate("Update facility done");
     }
 }

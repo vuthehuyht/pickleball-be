@@ -6,6 +6,7 @@ import com.macrace.pickleball.dto.response.MessageResponseTemplate;
 import com.macrace.pickleball.dto.response.YardResponse;
 import com.macrace.pickleball.exceptions.FacilityNotFoundException;
 import com.macrace.pickleball.exceptions.YardNameExistException;
+import com.macrace.pickleball.exceptions.YardNotFoundException;
 import com.macrace.pickleball.model.Facility;
 import com.macrace.pickleball.model.Yard;
 import com.macrace.pickleball.repository.FacilityRepository;
@@ -46,8 +47,13 @@ public class YardServiceImpl implements YardService {
     }
 
     @Override
-    public MessageResponseTemplate updateYard(YardRequest request) {
-        return null;
+    public MessageResponseTemplate updateYard(Integer id, YardRequest request) {
+        Yard yard = Optional.ofNullable(yardRepository.findById(id).orElseThrow(YardNotFoundException::new)).get();
+
+        yard.setName(request.getName());
+        yardRepository.save(yard);
+        log.info("Update yard with id = {}", id);
+        return new MessageResponseTemplate("Updating yard done");
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.util.List;
 public interface YardService {
     MessageResponseTemplate addNewYard(YardRequest request);
 
-    MessageResponseTemplate updateYard(YardRequest request);
+    MessageResponseTemplate updateYard(Integer id, YardRequest request);
 
     List<YardResponse> getAllYard();
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.geo.Point;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -31,4 +33,7 @@ public class Facility {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "facility")
+    private List<Yard> yards;
 }

@@ -19,8 +19,8 @@ services:
     restart: on-failure
     networks:
       - datsan-network
-#    env_file:
-#      - .env.dev
+    env_file:
+      - .env.dev
 
 networks:
   datsan-network:

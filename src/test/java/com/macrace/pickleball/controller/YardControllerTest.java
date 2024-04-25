@@ -1,11 +1,14 @@
 package com.macrace.pickleball.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.macrace.pickleball.constant.ErrorCode;
 import com.macrace.pickleball.dto.request.FacilityRequest;
 import com.macrace.pickleball.dto.request.LoginRequest;
 import com.macrace.pickleball.dto.request.RegisterRequest;
+import com.macrace.pickleball.dto.request.YardRequest;
 import com.macrace.pickleball.dto.response.AddFacilityResponse;
 import com.macrace.pickleball.dto.response.LoginResponse;
+import com.macrace.pickleball.dto.response.YardResponse;
 import com.macrace.pickleball.repository.UserRepository;
 import com.macrace.pickleball.service.JwtService;
 import com.macrace.pickleball.service.UserService;
@@ -27,15 +30,17 @@ import java.net.URI;
 import java.util.Objects;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class FacilityControllerTest {
+public class YardControllerTest {
     @Autowired
-    private FacilityController facilityController;
+    private YardController yardController;
 
     @Autowired
     private UserService userService;
@@ -66,104 +71,12 @@ public class FacilityControllerTest {
     }
 
     @Test
-    void facilityControllerInitializedCorrectly() {
-        assertThat(facilityController).isNotNull();
+    void yardControllerInitializedCorrectly() {
+        assertThat(yardController).isNotNull();
     }
 
     @Test
-    void testFacilityNameBlank() throws Exception {
-        RestTemplate restTemplate = new RestTemplate();
-
-        LoginRequest request = new LoginRequest();
-        request.setPhoneNumber("0972808478");
-        request.setPassword("123456");
-        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
-                new URI("http://localhost:" + randomServerPort + "/api/v1/auth/login"),
-                request, LoginResponse.class);
-
-        FacilityRequest request2 = new FacilityRequest();
-        request2.setName("");
-        request2.setAddress("address test");
-        request2.setPhoneNumber("0972808490");
-
-        mockMvc.perform(post("/api/v1/facility")
-                        .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsBytes(request2)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message[0]").value("Facility name is required"));
-    }
-
-    @Test
-    void testFacilityAddressBlank() throws Exception {
-        RestTemplate restTemplate = new RestTemplate();
-
-        LoginRequest request = new LoginRequest();
-        request.setPhoneNumber("0972808478");
-        request.setPassword("123456");
-        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
-                new URI("http://localhost:" + randomServerPort + "/api/v1/auth/login"),
-                request, LoginResponse.class);
-
-        FacilityRequest request2 = new FacilityRequest();
-        request2.setName("facility test");
-        request2.setAddress("");
-        request2.setPhoneNumber("0972808490");
-
-        mockMvc.perform(post("/api/v1/facility")
-                        .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsBytes(request2)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message[0]").value("Facility address is required"));
-    }
-
-    @Test
-    void testFacilityPhoneNumberBlank() throws Exception {
-        RestTemplate restTemplate = new RestTemplate();
-
-        LoginRequest request = new LoginRequest();
-        request.setPhoneNumber("0972808478");
-        request.setPassword("123456");
-        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
-                new URI("http://localhost:" + randomServerPort + "/api/v1/auth/login"),
-                request, LoginResponse.class);
-
-        FacilityRequest request2 = new FacilityRequest();
-        request2.setName("facility test");
-        request2.setAddress("facility address test");
-        request2.setPhoneNumber("");
-
-        mockMvc.perform(post("/api/v1/facility")
-                        .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsBytes(request2)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message[0]").value("Phone number is required"));
-    }
-
-    @Test
-    void testAddFacility() throws Exception {
-        RestTemplate restTemplate = new RestTemplate();
-
-        LoginRequest request = new LoginRequest();
-        request.setPhoneNumber("0972808478");
-        request.setPassword("123456");
-        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
-                new URI("http://localhost:" + randomServerPort + "/api/v1/auth/login"),
-                request, LoginResponse.class);
-
-        FacilityRequest request2 = new FacilityRequest();
-        request2.setName("test");
-        request2.setAddress("facility test");
-        request2.setPhoneNumber("0972808490");
-
-        mockMvc.perform(post("/api/v1/facility")
-                        .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsBytes(request2)))
-                .andExpect(status().isCreated());
-    }
-
-    @Test
-    void testGetAllFacility() throws Exception {
+    void testYardNameBlank() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
 
         LoginRequest request = new LoginRequest();
@@ -185,34 +98,165 @@ public class FacilityControllerTest {
                 new URI("http://localhost:" + randomServerPort + "/api/v1/facility"),
                 request1, AddFacilityResponse.class);
 
-        mockMvc.perform(get("/api/v1/facilities")
+        YardRequest entity2 = new YardRequest();
+        entity2.setName("");
+        entity2.setFacilityId(1);
+
+        mockMvc.perform(post("/api/v1/yard")
+                        .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsBytes(entity2)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message[0]").value("Yard name is required"));
+    }
+
+    @Test
+    void testFacilityIdBlank() throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("0972808478");
+        request.setPassword("123456");
+        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/auth/login"),
+                request, LoginResponse.class);
+
+        FacilityRequest entity = new FacilityRequest();
+        entity.setName("test 1");
+        entity.setAddress("facility test");
+        entity.setPhoneNumber("0972808490");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + response.getBody().accessToken());
+        HttpEntity<FacilityRequest> request1 = new HttpEntity<>(entity, headers);
+        restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/facility"),
+                request1, AddFacilityResponse.class);
+
+        YardRequest entity2 = new YardRequest();
+        entity2.setName("yard name");
+
+        mockMvc.perform(post("/api/v1/yard")
+                        .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsBytes(entity2)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message[0]").value("Facility id is required"));;
+    }
+
+    @Test
+    void testFacilityNotFound() throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("0972808478");
+        request.setPassword("123456");
+        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/auth/login"),
+                request, LoginResponse.class);
+
+        FacilityRequest entity = new FacilityRequest();
+        entity.setName("test 1");
+        entity.setAddress("facility test");
+        entity.setPhoneNumber("0972808490");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + response.getBody().accessToken());
+        HttpEntity<FacilityRequest> request1 = new HttpEntity<>(entity, headers);
+        restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/facility"),
+                request1, AddFacilityResponse.class);
+
+        YardRequest entity2 = new YardRequest();
+        entity2.setName("yard name");
+        entity2.setFacilityId(10);
+
+        mockMvc.perform(post("/api/v1/yard")
+                        .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsBytes(entity2)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Facility not found"))
+                .andExpect(jsonPath("$.error_code").value(ErrorCode.FACILITY_NOT_FOUND));
+    }
+
+    @Test
+    void testAddYardValid() throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("0972808478");
+        request.setPassword("123456");
+        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/auth/login"),
+                request, LoginResponse.class);
+
+        FacilityRequest entity = new FacilityRequest();
+        entity.setName("test 1");
+        entity.setAddress("facility test");
+        entity.setPhoneNumber("0972808490");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + response.getBody().accessToken());
+        HttpEntity<FacilityRequest> request1 = new HttpEntity<>(entity, headers);
+        restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/facility"),
+                request1, AddFacilityResponse.class);
+
+        YardRequest entity2 = new YardRequest();
+        entity2.setName("yard name");
+        entity2.setFacilityId(1);
+
+        mockMvc.perform(post("/api/v1/yard")
+                        .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsBytes(entity2)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.message").value("New yard was added successfully"));
+    }
+
+    @Test
+    void testGetAllYard() throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+
+        LoginRequest request = new LoginRequest();
+        request.setPhoneNumber("0972808478");
+        request.setPassword("123456");
+        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/auth/login"),
+                request, LoginResponse.class);
+
+        FacilityRequest entity = new FacilityRequest();
+        entity.setName("test 1");
+        entity.setAddress("facility test");
+        entity.setPhoneNumber("0972808490");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + response.getBody().accessToken());
+        HttpEntity<FacilityRequest> request1 = new HttpEntity<>(entity, headers);
+        restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/facility"),
+                request1, AddFacilityResponse.class);
+
+        YardRequest entity2 = new YardRequest();
+        entity2.setName("yard name");
+        entity2.setFacilityId(1);
+        HttpHeaders headers2 = new HttpHeaders();
+        headers2.set("Authorization", "Bearer " + response.getBody().accessToken());
+        HttpEntity<YardRequest> request2 = new HttpEntity<>(entity2, headers2);
+        restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/yard"),
+                request2, YardResponse.class);
+
+        mockMvc.perform(get("/api/v1/yards")
                         .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[0].name", is("yard name")))
+                .andExpect(jsonPath("$[0].state", is("READY")));
     }
 
     @Test
-    void testUpdateFacility_FacilityNotFound() throws Exception {
-        RestTemplate restTemplate = new RestTemplate();
-
-        LoginRequest request = new LoginRequest();
-        request.setPhoneNumber("0972808478");
-        request.setPassword("123456");
-        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(
-                new URI("http://localhost:" + randomServerPort + "/api/v1/auth/login"),
-                request, LoginResponse.class);
-
-        FacilityRequest request2 = new FacilityRequest();
-        request2.setName("test 2");
-
-        mockMvc.perform(put("/api/v1/facility/10")
-                        .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsBytes(request2)))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void testUpdateFacility_Success() throws Exception {
+    void testUpdateYard() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
 
         LoginRequest request = new LoginRequest();
@@ -226,8 +270,6 @@ public class FacilityControllerTest {
         entity.setName("test 1");
         entity.setAddress("facility test");
         entity.setPhoneNumber("0972808490");
-
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + response.getBody().accessToken());
         HttpEntity<FacilityRequest> request1 = new HttpEntity<>(entity, headers);
@@ -235,15 +277,24 @@ public class FacilityControllerTest {
                 new URI("http://localhost:" + randomServerPort + "/api/v1/facility"),
                 request1, AddFacilityResponse.class);
 
-        FacilityRequest request2 = new FacilityRequest();
-        request2.setName("test 2");
-        request2.setAddress("facility test");
-        request2.setPhoneNumber("0972808490");
+        YardRequest entity2 = new YardRequest();
+        entity2.setName("yard name");
+        entity2.setFacilityId(1);
+        HttpHeaders headers2 = new HttpHeaders();
+        headers2.set("Authorization", "Bearer " + response.getBody().accessToken());
+        HttpEntity<YardRequest> request2 = new HttpEntity<>(entity2, headers2);
+        restTemplate.postForEntity(
+                new URI("http://localhost:" + randomServerPort + "/api/v1/yard"),
+                request2, YardResponse.class);
 
-        mockMvc.perform(put("/api/v1/facility/1")
+        YardRequest request3 = new YardRequest();
+        entity2.setName("yard name 1");
+
+        mockMvc.perform(put("/api/v1/yard/1")
                         .header("Authorization", "Bearer " + Objects.requireNonNull(response.getBody()).accessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsBytes(request2)))
-                .andExpect(status().isOk());
+                        .content(objectMapper.writeValueAsBytes(request3)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message", is("Updating yard done")));
     }
 }

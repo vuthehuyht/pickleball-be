@@ -33,8 +33,10 @@ public class YardServiceImpl implements YardService {
         Facility facility = Optional.ofNullable(facilityRepository.findById(request.getFacilityId())
                 .orElseThrow(FacilityNotFoundException::new)).get();
 
-        Optional.ofNullable(yardRepository.findByName(request.getName())
-                .orElseThrow(YardNameExistException::new)).get();
+        Optional<Yard> yardOptional = yardRepository.findByName(request.getName());
+        if (yardOptional.isPresent()) {
+            throw new YardNameExistException();
+        }
 
         Yard newYard = Yard.builder()
                 .name(request.getName())

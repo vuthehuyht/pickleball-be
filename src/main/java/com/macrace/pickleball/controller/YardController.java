@@ -31,7 +31,7 @@ public class YardController {
     }
 
     @PutMapping(path = "/yard/{yardId}")
-    public ResponseEntity<Object> updateYard(@RequestParam("yardId") Integer yardId, YardRequest request) {
+    public ResponseEntity<Object> updateYard(@PathVariable("yardId") Integer yardId, YardRequest request) {
         log.info("Updating yard request");
         return new ResponseEntity<>(yardService.updateYard(yardId, request), HttpStatus.OK);
     }

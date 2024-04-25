@@ -14,11 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class YardServiceTest {
     @Autowired
     private YardService yardService;
@@ -75,7 +77,7 @@ public class YardServiceTest {
     @Test
     void testGetAllYards() {
         YardRequest request = new YardRequest();
-        request.setName("yard test 2");
+        request.setName("yard 2");
         request.setFacilityId(1);
         yardService.addNewYard(request);
 

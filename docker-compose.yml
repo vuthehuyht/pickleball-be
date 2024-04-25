@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - datsan-network
+    depends_on:
+      - backend
+
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    networks:
+      - datsan-network
+    env_file:
+      - .env.dev
+
+networks:
+  datsan-network:
+    driver: bridge

@@ -17,7 +17,7 @@ FROM eclipse-temurin:17-jre-alpine
 RUN addgroup -S spring; adduser -S java -G spring
 USER java
 
-WORKDIR /if
+WORKDIR /datsan
 EXPOSE 8080
 COPY --from=builder /app/target/*.jar datsan-rest-api.jar
 ENTRYPOINT ["sh", "-c", "java -jar datsan-rest-api.jar"]

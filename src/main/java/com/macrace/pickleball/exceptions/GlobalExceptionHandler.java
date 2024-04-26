@@ -33,7 +33,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
 
-        responseBody.put("errors", errors);
+        responseBody.put("message", errors);
         log.info(responseBody.toString());
         return new ResponseEntity<>(responseBody, headers, status);
     }
@@ -73,4 +73,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(YardNameExistException.class)
+    public ResponseEntity<Object> handleFacilityNotFoundException(YardNameExistException e) {
+        log.error("YardNameExistException {}", e.toString());
+        return new ResponseEntity<>(new ErrorResponseTemplate(
+                e.getErrorCode(),
+                e.getMessage()
+        ), HttpStatus.NOT_FOUND);
+    }
 }

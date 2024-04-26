@@ -82,7 +82,7 @@ public class AuthControllerTest {
         mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]").value("Invalid phone number format"));
+                .andExpect(jsonPath("$.message[0]").value("Invalid phone number format"));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class AuthControllerTest {
         mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]").value("Password is required"));
+                .andExpect(jsonPath("$.message[0]").value("Password is required"));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class AuthControllerTest {
         mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]").value("Full name is required"));
+                .andExpect(jsonPath("$.message[0]").value("Full name is required"));
     }
 
     @Test
@@ -171,7 +171,7 @@ public class AuthControllerTest {
         mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]").value("Password is required"));
+                .andExpect(jsonPath("$.message[0]").value("Password is required"));
     }
 
     @Test
